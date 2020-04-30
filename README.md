@@ -10,6 +10,13 @@ Comece baixando o repositório com:
 Entre na pasta com:
 > `cd Image-Generator`
 
+Baixe os módulos necessários com:
+- Se estiver no linux:
+> `$ pip3 install -r requirements.txt`
+
+- Se estiver no Windows:
+> `pip install -r requirements.txt`
+
 ## Como rodar um exemplo de teste
 
 Execute o arquivo `exemplo.py`
