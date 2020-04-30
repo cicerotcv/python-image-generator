@@ -261,7 +261,7 @@ class ImageObject():
         x = self.width/2 - w/2
         y = self.py/2 - h/2
         self.draw.text((x, y),
-                       self.title, font=self.creditsFont, fill=self.colorScheme["text"])
+                       self.title, font=self.titleFont, fill=self.colorScheme["text"])
 
     def putText(self):
 

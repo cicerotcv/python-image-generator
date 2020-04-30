@@ -22,7 +22,7 @@ new_image.setTitleFont("firacode-light", 50)
 new_image.setTitle("Default Title")
 
 # define as caracteristicas dos créditos
-new_image.setCreditsFont("firacode-bold", 40)
+new_image.setCreditsFont("firacode-bold", 50)
 new_image.setCredits("yourCustomCreditsHere")
 
 # exibe a imagem em modo de desenvolvimento
