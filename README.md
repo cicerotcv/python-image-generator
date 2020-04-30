@@ -15,7 +15,7 @@ Entre na pasta com:
 Execute o arquivo `exemplo.py`
 
 - Se estiver no linux:
-    > `$ python3 exemplo.py`
+> `$ python3 exemplo.py`
 
 - Se estiver no Windows:
-    > `python exemplo.py`
+> `python exemplo.py`
