@@ -5,7 +5,7 @@ Programa em python 3 que gera imagens com textos de forma personalizada e seguin
 ## Como instalar
 
 Comece baixando o repositório com:
-> `git pull https://github.com/cicerotcv/Image-Generator.git`
+> `git clone https://github.com/cicerotcv/Image-Generator.git`
 
 Entre na pasta com:
 > `cd Image-Generator`
