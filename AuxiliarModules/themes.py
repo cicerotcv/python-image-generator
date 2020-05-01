@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-
+"""
+Não funciona se rodar diretamente
+"""
+from os import listdir, system, sys, path
+sys.path.append(path.abspath(path.dirname(__file__) ))
 from json import loads, dumps
+from AuxiliarModules.router import themesPath as _themesPath, colorsPath as _colorsPath
 
-_themesPath = "assets/themes/themes.json"
-_colorsPath = "assets/themes/colors.json"
-print("themesPath:", _themesPath)
 
 with open(_themesPath, 'r') as themesFile:
     _themes = loads(themesFile.read())

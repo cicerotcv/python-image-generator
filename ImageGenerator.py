@@ -4,23 +4,15 @@ Módulo central que utiliza todo e qualquer método e chamada
 """
 import json
 import uuid
-from os import listdir, system
-
+from os import listdir, system, sys, path
+sys.path.append(path.abspath(path.dirname(__file__) ))
 from PIL import Image, ImageDraw, ImageFont
+from AuxiliarModules.themes import getColor, getTheme
+from AuxiliarModules.router import fonts
+# from themes. import getTheme, getColor
+# from router import fonts
 
-from AuxiliarModules.themes import getTheme, getColor
-
-fonts = {
-    "ubuntu-regular": "assets/fonts/UbuntuMono-Bold.ttf",
-    "ubuntu-bold": "assets/fonts/UbuntuMono-Bold.ttf",
-    "firacode-light": "assets/fonts/FiraCode-Light.ttf",
-    "firacode-medium": "assets/fonts/FiraCode-Medium.ttf",
-    "firacode-regular": "assets/fonts/FiraCode-Regular.ttf",
-    "firacode-bold": "assets/fonts/FiraCode-Bold.ttf",
-    "firacode-retina": "assets/fonts/FiraCode-Retina.ttf",
-    "handwritten": "assets/fonts/GloriaHallelujah-Regular.ttf",
-}
-
+print(fonts)
 
 class Ponto:
     def __init__(self, x, y):
