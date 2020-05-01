@@ -12,7 +12,6 @@ from AuxiliarModules.router import fonts
 # from themes. import getTheme, getColor
 # from router import fonts
 
-print(fonts)
 
 class Ponto:
     def __init__(self, x, y):
@@ -281,9 +280,11 @@ class ImageObject():
         if self.drawPaddingBox:
             self.drawPaddingLine()
         if debug:
-            self.drawLine((self.width/2, 0), (self.width/2, self.height))
-            self.drawLine((0, self.height/2), (self.width, self.height/2))
-        
+            self.drawLine((self.width/2, 0), (self.width/2, self.height)) # vertical central
+            self.drawLine((0, self.height/2), (self.width, self.height/2)) # horizontal cetral
+            self.drawLine((0, self.py/2), (self.width, self.py/2)) # horizontal margem superior
+            self.drawLine((0, self.height - self.py/2), (self.width, self.height - self.py/2)) # horizontal margem inferior
+
         self.putText()
         if self.credits:
             self.putCredits()
