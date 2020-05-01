@@ -7,6 +7,8 @@ thisPath = path.abspath(path.dirname(__file__))
 themesPath = path.join(thisPath, "../assets/themes/themes.json")
 colorsPath = path.join(thisPath, "../assets/themes/colors.json")
 fontsPath = path.join(thisPath, "../assets/fonts")
+outputPath = path.join(thisPath, "../output")
+
 fonts = {
     "ubuntu-regular": path.join(fontsPath,"UbuntuMono-Regular.ttf"),
     "ubuntu-bold": path.join(fontsPath,"UbuntuMono-Bold.ttf"),

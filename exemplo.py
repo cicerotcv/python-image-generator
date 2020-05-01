@@ -7,7 +7,7 @@ from os import sys, path
 sys.path.append(path.abspath(path.dirname(__file__) ))
 # ==========
 from ImageGenerator import ImageObject as Image
-
+from AuxiliarModules.router import outputPath
 
 def main():
     # Cria o objeto do tipo ImageObject rsrsrs
@@ -33,6 +33,10 @@ def main():
 
     # exibe a imagem em modo de desenvolvimento
     new_image.show(debug=True)
+    
+    # salva a imagem
+    new_image.save(outputPath)
+    
 
 
 if __name__ == "__main__":

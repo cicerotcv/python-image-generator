@@ -235,6 +235,7 @@ class ImageObject():
     def createImage(self):
         self.image = Image.new("RGBA", (self.width, self.height),
                                self.colorScheme["background-color"])
+        self.draw
 
     def putCredits(self):
 
@@ -271,8 +272,8 @@ class ImageObject():
                            line, font=self.textFont, fill=self.colorScheme["text"])
 
     def show(self, debug:bool=False):
-        if not self.image:
-            self.createImage()
+        # if not self.image:
+        self.createImage()
         # if not self.lines:
         self.setLines()
         # if not self.draw:
@@ -291,4 +292,7 @@ class ImageObject():
         if self.title:
             self.putTitle()
         self.image.show()
-        self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
+        # self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
+
+    def save(self, path:str):
+        self.image.save("output/exemplo.png")
