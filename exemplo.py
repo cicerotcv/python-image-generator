@@ -35,7 +35,7 @@ def main():
     new_image.show(debug=True)
     
     # salva a imagem
-    new_image.save(outputPath)
+    new_image.save()
     
 
 

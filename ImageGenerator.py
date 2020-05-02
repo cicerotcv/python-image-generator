@@ -4,7 +4,7 @@ Módulo central que utiliza todo e qualquer método e chamada
 """
 import json
 import uuid
-from os import listdir, system, sys, path
+from os import listdir, system, sys, path, mkdir
 sys.path.append(path.abspath(path.dirname(__file__) ))
 from PIL import Image, ImageDraw, ImageFont
 from AuxiliarModules.themes import getColor, getTheme
@@ -12,6 +12,20 @@ from AuxiliarModules.router import fonts
 # from themes. import getTheme, getColor
 # from router import fonts
 
+
+def assertOutput(outputPath:str):
+    if outputPath:
+        if "output" not in listdir():
+            system(r"mkdir output\%s"%outputPath)
+        if outputPath not in listdir("output"):
+            mkdir(r"mkdir output\%s"%outputPath)
+        else:
+            print("Diretório de saída existe.")
+        return r"output\%s"%outputPath
+    else:
+        if "output" not in listdir():
+            system(r"mkdir output\singleImages")
+        return r"output\SingleImages\\"
 
 class Ponto:
     def __init__(self, x, y):
@@ -29,6 +43,7 @@ class ImageObject():
                  textFontSize: int = 48, titleFontSize: int = 40, creditsFontSize: int = 40, width: int = 1024,
                  height: int = 1024, paddingX: float = 0.05, paddingY: float = 0.1):
         # data
+        self.name = "exemplo" # default name (precisa ser trocado em algum método)
         self.text = text
         self.title = title
         self.credits = title
@@ -291,8 +306,8 @@ class ImageObject():
             self.putCredits()
         if self.title:
             self.putTitle()
-        self.image.show()
+        # self.image.show()
         # self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
 
-    def save(self, path:str):
-        self.image.save("output/exemplo.png")
+    def save(self, path:str=None):
+        self.image.save(assertOutput(path) + self.name + ".png")
