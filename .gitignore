@@ -1,5 +1,5 @@
 
 /**/__pycache__/*
 **/.vscode/*
-input/**/*.png
-output/**/*.png
+/input/**/*.png
+/output/**/*.png
