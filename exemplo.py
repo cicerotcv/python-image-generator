@@ -39,10 +39,10 @@ def main():
     new_image.setCredits("footer")
 
     # exibe a imagem em modo de desenvolvimento
-    new_image.show()
+    new_image.process(show=True)
 
     # salva a imagem
-    # new_image.save()
+    new_image.save()
 
 
 if __name__ == "__main__":
