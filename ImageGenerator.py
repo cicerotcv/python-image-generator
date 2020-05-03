@@ -13,20 +13,6 @@ sys.path.append(path.abspath(path.dirname(__file__)))
 # from router import fonts
 
 
-def assertOutput(outputPath: str):
-    if outputPath:
-        if "output" not in listdir():
-            system(r"mkdir output\%s" % outputPath)
-        if outputPath not in listdir("output"):
-            mkdir(r"mkdir output\%s" % outputPath)
-        else:
-            print("Diretório de saída existe.")
-        return r"output\%s" % outputPath
-    else:
-        if "output" not in listdir():
-            system(r"mkdir output\singleImages")
-        return r"output\SingleImages\\"
-
 
 class Ponto:
     def __init__(self, x, y):
@@ -241,6 +227,28 @@ class ImageObject():
     def getLineShape(self, line: str, font: ImageFont):
         return font.getsize(line)
 
+    def assertOutput(self, outputPath: str):
+        if outputPath:
+            if "output" not in listdir():
+                system(r"mkdir output\%s" % outputPath)
+            if outputPath not in listdir("output"):
+                system(r"mkdir output\\%s" % outputPath)
+            else:
+                if self.debug:
+                    print("Diretório de saída existe.")
+                    print("output\%s\\" % outputPath)
+            return r"output\%s\\" % outputPath
+        else:
+            if "output" not in listdir():
+                system(r"mkdir output\SingleImages")
+                if self.debug:
+                    print("[DEBUG]  Output criado")
+            if "SingleImages" not in listdir("output"):
+                system(r"mkdir output\SingleImages")
+                if self.debug:
+                    print("[DEBUG]  SingleImages criado em /output/")
+            return r"output\SingleImages\\"
+
     # métodos de ação
     def drawLine(self, p0, p1):
         p0 = Ponto(p0[0], p0[1])
@@ -301,7 +309,7 @@ class ImageObject():
             self.draw.text((x, y + char_height*index),
                            line, font=self.textFont, fill=self.colorScheme["text"])
 
-    def show(self):
+    def process(self, show: bool = False):
         # if not self.image:
         self.createImage()
         # if not self.lines:
@@ -325,8 +333,9 @@ class ImageObject():
             self.putCredits()
         if self.title:
             self.putTitle()
-        self.image.show()
+        if show:
+            self.image.show()
         # self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
 
     def save(self, path: str = None):
-        self.image.save(assertOutput(path) + self.name + ".png")
+        self.image.save(self.assertOutput(path) + self.name + ".png")
