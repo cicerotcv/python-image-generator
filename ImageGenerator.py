@@ -128,6 +128,7 @@ class ImageObject():
             font=fonts[fontFamily], size=fontSize)
 
     def setLines(self):
+        "transforma o texto em `self.text` em linhas a serem desenhadas na imagem;"
         if not self.lines:
             self.formatString()
         self.lines = [line.strip() for line in self.lines]
@@ -269,10 +270,11 @@ class ImageObject():
                             outline=self.colorScheme["details"])
 
     def createImage(self):
+        "Cria a imagem com altura, largura e cor de fundo"
         self.image = Image.new("RGBA", (self.width, self.height),
                                self.colorScheme["background-color"])
         if self.debug:
-            print("""Imagem criada:\n\tmode=RGBA,\n\twidth: {width},\n\theight: {height},\n\tbackground-color: {backgroundColor}""".format(
+            print("""[DEBUG]  Imagem criada:\n\tmode=RGBA,\n\twidth: {width},\n\theight: {height},\n\tbackground-color: {backgroundColor}""".format(
                 width=self.width, height=self.height, backgroundColor=self.colorScheme['background-color']))
 
     def putCredits(self):
@@ -309,15 +311,20 @@ class ImageObject():
             self.draw.text((x, y + char_height*index),
                            line, font=self.textFont, fill=self.colorScheme["text"])
 
-    def process(self, show: bool = False):
-        # if not self.image:
+    def process(self, show: bool = False, debug: bool = False):
+        "Processa a imagem e torna ela visualizável"
+        if debug:
+            self.debug = True
+
         self.createImage()
-        # if not self.lines:
+
         self.setLines()
-        # if not self.draw:
+
         self.setDrawer()
+
         if self.drawPaddingBox:
             self.drawPaddingLine()
+
         if self.debug:
             self.drawLine((self.width/2, 0), (self.width/2,
                                               self.height))  # vertical central

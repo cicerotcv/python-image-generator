@@ -24,10 +24,15 @@ def main():
     for imageName, imageContent in images.items():
         # Cria o objeto do tipo ImageObject rsrsrs
         new_image = Image()
-        new_image.name = imageName
 
         # ativa o modo debug
-        new_image.debug = False
+        # new_image.debug = True
+
+        # define o nome da imagem
+        new_image.name = imageName
+
+        # define o esquema de cores da image
+        new_image.setColorScheme(theme="terminal-green")
 
         # define as caracteristicas do texto principal da imagem
         new_image.setText(imageContent["text"])
@@ -41,8 +46,8 @@ def main():
         new_image.setCreditsFont("firacode-light", 35)
         new_image.setCredits(imageContent["credits"])
 
-        # exibe a imagem em modo de desenvolvimento
-        new_image.process(show=False)
+        # processa a imagem com o modo de debug desativado
+        new_image.process(show=True, debug=False)
 
         # salva a imagem
         new_image.save(path="exemplo")
