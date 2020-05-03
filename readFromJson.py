@@ -41,7 +41,7 @@ def main():
         new_image.setCreditsFont("firacode-light", 35)
         new_image.setCredits(imageContent["credits"])
 
-        # exibe a imagem em modo de desenvolvimento
+        # processa a imagem sem exibir
         new_image.process(show=False)
 
         # salva a imagem
