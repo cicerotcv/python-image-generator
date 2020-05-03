@@ -16,11 +16,5 @@
         "details": "#672008",
         "text": "#672008",
         "selection": "#672008"
-    },
-    "insper-talus": {
-        "background-color": "#595959",
-        "details": "#38a0ff",
-        "text": "#ffffff",
-        "selection": "#38a0ff"
     }
 }
