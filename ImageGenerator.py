@@ -13,7 +13,6 @@ sys.path.append(path.abspath(path.dirname(__file__)))
 # from router import fonts
 
 
-
 class Ponto:
     def __init__(self, x, y):
         self.x = x
@@ -43,6 +42,14 @@ class ImageObject():
             font=fonts[titleFont], size=titleFontSize)
         self.creditsFont = ImageFont.truetype(
             font=fonts[creditsFont], size=creditsFontSize)
+
+        self.textFontSize = textFontSize
+        self.textFontFamily = textFont
+        self.titleFontSize = titleFontSize
+        self.titleFontFamily = titleFont
+        self.creditsFontSize = creditsFontSize
+        self.creditsFontFamily = creditsFont
+
         # colors
         self.colorScheme = getTheme(theme)
         # "exemplo": {
@@ -112,10 +119,14 @@ class ImageObject():
         self.creditsFont = ImageFont.truetype(
             font=fonts[credits], size=creditsFontSize)
 
-    def setTextFont(self, fontFamily: str = "ubuntu-bold", fontSize: int = 48):
+    def setTextFont(self, fontFamily: str = None, fontSize: int = None):
         "Determina a fonte do texto principal da imagem."
+        if fontFamily:
+            self.textFontFamily = fontFamily
+        if fontSize:
+            self.textFontSize = fontSize
         self.textFont = ImageFont.truetype(
-            font=fonts[fontFamily], size=fontSize)
+            font=fonts[self.textFontFamily], size=self.textFontSize)
 
     def setCreditsFont(self, fontFamily: str = "firacode-retina", fontSize: int = 40):
         "Determina a fonte dos créditos da imagem."
@@ -251,11 +262,21 @@ class ImageObject():
             return r"output\SingleImages\\"
 
     # métodos de ação
-    def drawLine(self, p0, p1):
+    def drawLine(self, p0: tuple, p1: tuple, color: str = "details"):
+        if color in self.colorScheme:
+            color = self.colorScheme[color]
+        else:
+            try:
+                color = getColor(colorName=color)
+            except:
+                print("drawLine color não foi identificada; verifique e tente novamente")
+        if self.debug:
+            print("[DEBUG] drawLine:")
+            print(f"        color set to: {color}")
         p0 = Ponto(p0[0], p0[1])
         p1 = Ponto(p1[0], p1[1])
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
-        self.draw.line(shape, fill="red", width=2)
+        self.draw.line(shape, fill=color, width=2)
 
     def drawRect(self, p0: Ponto, p1: Ponto):
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
@@ -267,7 +288,7 @@ class ImageObject():
         h = self.height
         shape = [(self.px, self.py), (w-self.px, h-self.py)]
         self.draw.rectangle(xy=shape, fill=None,
-                            outline=self.colorScheme["details"])
+                            outline=getColor('red'), width=2)
 
     def createImage(self):
         "Cria a imagem com altura, largura e cor de fundo"
@@ -301,14 +322,27 @@ class ImageObject():
 
         nLines = len(self.lines)
         char_width, char_height = self.get_char_box(font=self.textFont)
-        max_line_width = max([len(line) for line in self.lines])*char_width
+
+        maxLineHeight = max(
+            [self.getLineShape(line, font=self.textFont)[1] for line in self.lines])
 
         self.drawdraw = ImageDraw.Draw(self.image)
 
-        x = int(self.width/2 - max_line_width/2)
-        y = int(self.height/2 - nLines*char_height/2)
+        totalTextHeight = maxLineHeight*nLines
+        while not totalTextHeight < self.maxTextHeight:
+            self.setTextFont(fontSize=self.textFontSize-1)
+            maxLineHeight = max(
+                [self.getLineShape(line, font=self.textFont)[1] for line in self.lines])
+            totalTextHeight = maxLineHeight*nLines
+
+        maxLineWidth = max(
+            [self.getLineShape(line, font=self.textFont)[0] for line in self.lines])
+
+        x = int(self.width/2 - maxLineWidth/2)
+        y = int(self.height/2 - nLines*maxLineHeight/2)
+
         for index, line in enumerate(self.lines):
-            self.draw.text((x, y + char_height*index),
+            self.draw.text((x, y + maxLineHeight*index),
                            line, font=self.textFont, fill=self.colorScheme["text"])
 
     def process(self, show: bool = False, debug: bool = False):
@@ -326,14 +360,26 @@ class ImageObject():
             self.drawPaddingLine()
 
         if self.debug:
+            # vertical central
             self.drawLine((self.width/2, 0), (self.width/2,
                                               self.height))  # vertical central
-            # horizontal cetral
+            # vertical esquerda - padding
+            self.drawLine((self.px, 0), (self.px, self.height))
+            # vertical direita - padding
+            self.drawLine((self.width-self.px, 0),
+                          (self.width - self.px, self.height))
+            # horizontal central
             self.drawLine((0, self.height/2), (self.width, self.height/2))
-            # horizontal margem superior
+            # horizontal superior - titulo
             self.drawLine((0, self.py/2), (self.width, self.py/2))
-            self.drawLine((0, self.height - self.py/2), (self.width,
-                                                         self.height - self.py/2))  # horizontal margem inferior
+            # horizontal superior - padding
+            self.drawLine((0, self.py), (self.width, self.py))
+            # horizontal inferior - padding
+            self.drawLine((0, self.height - self.py),
+                          (self.width, self.height - self.py))
+            # horizontal inferior - credits
+            self.drawLine((0, self.height - self.py/2),
+                          (self.width, self.height - self.py/2))
 
         self.putText()
         if self.credits:
