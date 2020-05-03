@@ -48,7 +48,7 @@ def main():
 
         # processa a imagem com o modo de debug desativado
         new_image.process(show=True, debug=False)
-
+        
         # salva a imagem
         new_image.save(path="exemplo")
 
