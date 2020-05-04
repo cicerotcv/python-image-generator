@@ -3,18 +3,28 @@
         "background-color": "#121212",
         "details": "#20FF00",
         "text": "#20FF00",
-        "selection": "#20FF00"
+        "selection": "#20FF00",
+        "secondary":"#121212"
     },
     "terminal-red": {
         "background-color": "#121212",
         "details": "#FF2000",
         "text": "#FF2000",
-        "selection": "#FF2000"
+        "selection": "#FF2000",
+        "secondary":"#121212"
     },
     "sepia": {
         "background-color": "#E7CA70",
         "details": "#672008",
         "text": "#672008",
-        "selection": "#672008"
+        "selection": "#672008",
+        "secondary":"#E7CA70"
+    },
+    "black-white-red": {
+        "background-color": "#000000",
+        "details": "#FF2000",
+        "text": "#FFFFFF",
+        "selection": "#FF2000",
+        "secondary":"#FFFFFF"
     }
 }
