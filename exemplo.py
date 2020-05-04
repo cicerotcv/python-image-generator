@@ -26,11 +26,9 @@ def main():
     # define o esquema de cores da imagem
     # new_image.setColorScheme("insper-talus")
 
-    string1 = "Seu aplicativo de e-mail consegue identificar spams. Seus aplicativos de músicas, filmes e notícias fazem recomendações para você. Seu aplicativo de fotos consegue reconhecer uma pessoa. O aplicativo em que você faz compras faz sugestões do que pode ser útil, baseando-se nas especificidades do seu perfil. Seu aplicativo de transporte indica para onde você provavelmente irá. Isso, é Machine learning."
-    string2 = "Machine learning pode ser descrita como a possibilidade de um código fazer algo sem ser diretamente programado para isso. Esses algoritmos podem ser subdivididos em três principais categorias, sendo elas, supervised, unsupervised e semi-supervised. Na primeira, por meio de dados previamente catalogados, um determinado algoritmo consegue determinar padrões e gerar predições ou outputs. Um bom exemplo para esse tipo de algoritmo é seu aplicativo de e-mail. Quanto a segunda, um algoritmo consegue observar padrões em dados não catalogados e, a partir disso, cria outputs. Um exemplo seria o aplicativo em que você faz compras. Por fim, o último tipo é uma mistura dos dois anteriores, possui alguns dados previamente catalogados e alguns não catalogados. O melhor exemplo para ilustrar é seu aplicativo de fotos, em que o algoritmo consegue reconhecer uma pessoa, mas precisa de ajuda humana para nomeá-la."
-    
+    string1 = "exemplo de texto com seis palavras"
     # define as caracteristicas do texto principal da imagem
-    new_image.setText(string2)
+    new_image.setText(string1)
     new_image.setTextFont("ubuntu-bold",45)
 
     # define as caracteristicas do titulo
