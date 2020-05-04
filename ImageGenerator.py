@@ -108,7 +108,8 @@ class ImageObject():
     def setFontFamily(self, text: str = "ubuntu-bold", title: str = "ubuntu-bold",
                       credits: str = "firacode-retina", textFontSize: int = 48,
                       titleFontSize: int = 40, creditsFontSize: int = 40):
-        """ Define as fontes utilizadas na imagem\n
+        """
+        Define as fontes utilizadas na imagem\n
         `text`: define o estilo da font a ser usada no texto;\n
         `title`: define o estilo da font a ser usada no título;\n
         `credits`: pdefine o estilo da font a ser usada nos créditos;
@@ -209,7 +210,7 @@ class ImageObject():
 
         return max_cpl - last_space
 
-    def formatString(self) -> list:
+    def formatString(self):
         """
         faz as devidas manipulações na string para
         centralizar na imagem
@@ -229,7 +230,7 @@ class ImageObject():
             last_space = self.findLastSpace(new_string, max_cpl)
             if last_space == 0:
                 break
-            line = new_string[:last_space].lstrip()
+            line = new_string[:last_space].strip()
             lines.append(line)
 
             new_string = new_string[last_space:].lstrip()
@@ -280,7 +281,7 @@ class ImageObject():
 
     def drawRect(self, p0: Ponto, p1: Ponto):
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
-        self.draw.rectangle(xy=shape, fill=getTheme("terminal-red")["background-color"],
+        self.draw.rectangle(xy=shape, fill=self.colorScheme["details"],
                             outline=None)
 
     def drawPaddingLine(self):
@@ -295,7 +296,7 @@ class ImageObject():
         self.image = Image.new("RGBA", (self.width, self.height),
                                self.colorScheme["background-color"])
         if self.debug:
-            print("""[DEBUG]  Imagem criada:\n\tmode=RGBA,\n\twidth: {width},\n\theight: {height},\n\tbackground-color: {backgroundColor}""".format(
+            print("""[DEBUG] Imagem criada:\n\tmode=RGBA,\n\twidth: {width},\n\theight: {height},\n\tbackground-color: {backgroundColor}""".format(
                 width=self.width, height=self.height, backgroundColor=self.colorScheme['background-color']))
 
     def putCredits(self):
@@ -304,6 +305,11 @@ class ImageObject():
 
         x = self.width/2 - w/2
         y = self.height - h/2 - self.py/2
+
+        if self.drawSelection:
+            width, height = self.getLineShape(
+                self.credits, font=self.creditsFont)
+            self.drawRect(Ponto(x, y), Ponto(x+width, y+height))
         self.draw.text((x, y),
                        self.credits, font=self.creditsFont, fill=self.colorScheme["text"])
 
@@ -313,6 +319,11 @@ class ImageObject():
 
         x = self.width/2 - w/2
         y = self.py/2 - h/2
+
+        if self.drawSelection:
+            width, height = self.getLineShape(self.title, font=self.titleFont)
+            self.drawRect(Ponto(x, y), Ponto(x+width, y+height))
+
         self.draw.text((x, y),
                        self.title, font=self.titleFont, fill=self.colorScheme["text"])
 
@@ -325,30 +336,45 @@ class ImageObject():
 
         maxLineHeight = max(
             [self.getLineShape(line, font=self.textFont)[1] for line in self.lines])
-
-        self.drawdraw = ImageDraw.Draw(self.image)
-
-        totalTextHeight = maxLineHeight*nLines
-        while not totalTextHeight < self.maxTextHeight:
-            self.setTextFont(fontSize=self.textFontSize-1)
-            maxLineHeight = max(
-                [self.getLineShape(line, font=self.textFont)[1] for line in self.lines])
-            totalTextHeight = maxLineHeight*nLines
-
         maxLineWidth = max(
             [self.getLineShape(line, font=self.textFont)[0] for line in self.lines])
+
+        if not self.draw:
+            self.draw = ImageDraw.Draw(self.image)
+
+        totalTextHeight = maxLineHeight*nLines
+        while not ((totalTextHeight < self.maxTextHeight) and (maxLineWidth < self.maxTextWidth)):
+            self.setTextFont(fontSize=self.textFontSize-1)
+            self.formatString()
+            maxLineHeight = max(
+                [self.getLineShape(line, font=self.textFont)[1] for line in self.lines])
+            maxLineWidth = max(
+                [self.getLineShape(line, font=self.textFont)[0] for line in self.lines])
+            totalTextHeight = maxLineHeight*nLines
+            nLines = len(self.lines)
 
         x = int(self.width/2 - maxLineWidth/2)
         y = int(self.height/2 - nLines*maxLineHeight/2)
 
         for index, line in enumerate(self.lines):
+            if self.drawSelection:
+                width = self.getLineShape(line, font=self.textFont)[0]
+                height = maxLineHeight
+                self.drawRect(Ponto(x, y + maxLineHeight*index),
+                              Ponto(x+width, y+height + maxLineHeight*index))
+
             self.draw.text((x, y + maxLineHeight*index),
                            line, font=self.textFont, fill=self.colorScheme["text"])
 
     def process(self, show: bool = False, debug: bool = False):
-        "Processa a imagem e torna ela visualizável"
+        """Processa a imagem e torna ela visualizável;\n
+        `show`: se True, exibe o programa ao final do processo;\n
+        `debug`: se True, processa a imagem com modo Debug ativado, isto é, fica printando etapas e desenha linhas de referência;"""
         if debug:
             self.debug = True
+        if self.drawSelection:
+            self.colorScheme["selection"] = self.colorScheme["details"]
+            self.colorScheme["text"] = self.colorScheme["background-color"]
 
         self.createImage()
 
