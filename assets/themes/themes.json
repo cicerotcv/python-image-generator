@@ -21,7 +21,7 @@
         "secondary":"#E7CA70"
     },
     "black-white-red": {
-        "background-color": "#000000",
+        "background-color": "#595959",
         "details": "#FF2000",
         "text": "#FFFFFF",
         "selection": "#FF2000",
