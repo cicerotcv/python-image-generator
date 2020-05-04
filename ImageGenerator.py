@@ -15,8 +15,8 @@ sys.path.append(path.abspath(path.dirname(__file__)))
 
 class Ponto:
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = int(x)
+        self.y = int(y)
 
 
 class ImageObject():
@@ -83,19 +83,19 @@ class ImageObject():
         "Determina o texto principal da imagem."
         self.text = string
         if self.debug:
-            print("Text definido como:", self.text)
+            print("[DEBUG] Text definido como:", self.text)
 
     def setCredits(self, string: str = "default credits"):
         "Determina os créditos da imagem"
         self.credits = string
         if self.debug:
-            print("Credits definido como:", self.credits)
+            print("[DEBUG] Credits definido como:", self.credits)
 
     def setTitle(self, string: str = "default title"):
         "Determina o título da imagem"
         self.title = string
         if self.debug:
-            print("Title definido como:", self.title)
+            print("[DEBUG] Title definido como:", self.title)
 
     def setColorScheme(self, theme: str = "sepia"):
         """Define o esquema de cores da imagem\n
@@ -103,7 +103,7 @@ class ImageObject():
         Veja a documentação para saber quais temas estão disponíveis e veja como construir o seu próprio."""
         self.colorScheme = getTheme(theme)
         if self.debug:
-            print("Theme definido como:", self.colorScheme)
+            print("[DEBUG] Theme definido como:", self.colorScheme)
 
     def setFontFamily(self, text: str = "ubuntu-bold", title: str = "ubuntu-bold",
                       credits: str = "firacode-retina", textFontSize: int = 48,
@@ -271,9 +271,10 @@ class ImageObject():
                 color = getColor(colorName=color)
             except:
                 print("drawLine color não foi identificada; verifique e tente novamente")
+                exit()
         if self.debug:
             print("[DEBUG] drawLine:")
-            print(f"        color set to: {color}")
+            print(f"\tcolor: {color}")
         p0 = Ponto(p0[0], p0[1])
         p1 = Ponto(p1[0], p1[1])
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
@@ -281,6 +282,9 @@ class ImageObject():
 
     def drawRect(self, p0: Ponto, p1: Ponto):
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
+        if self.debug:
+            print("[DEBUG] drawRect:")
+            print(f"\t(x0,y0):{(p0.x,p0.y)}; (x1,y1):{(p1.x,p1.y)}")
         self.draw.rectangle(xy=shape, fill=self.colorScheme["details"],
                             outline=None)
 
@@ -296,8 +300,11 @@ class ImageObject():
         self.image = Image.new("RGBA", (self.width, self.height),
                                self.colorScheme["background-color"])
         if self.debug:
-            print("""[DEBUG] Imagem criada:\n\tmode=RGBA,\n\twidth: {width},\n\theight: {height},\n\tbackground-color: {backgroundColor}""".format(
-                width=self.width, height=self.height, backgroundColor=self.colorScheme['background-color']))
+            print(
+                f"""[DEBUG] Imagem criada:\n\tmode=RGBA,\n\twidth: {
+                    self.width},\n\theight: {
+                        self.height},\n\tbackground-color: {
+                            self.colorScheme['background-color']}""")
 
     def putCredits(self):
 
@@ -339,9 +346,6 @@ class ImageObject():
         maxLineWidth = max(
             [self.getLineShape(line, font=self.textFont)[0] for line in self.lines])
 
-        if not self.draw:
-            self.draw = ImageDraw.Draw(self.image)
-
         totalTextHeight = maxLineHeight*nLines
         while not ((totalTextHeight < self.maxTextHeight) and (maxLineWidth < self.maxTextWidth)):
             self.setTextFont(fontSize=self.textFontSize-1)
@@ -374,7 +378,7 @@ class ImageObject():
             self.debug = True
         if self.drawSelection:
             self.colorScheme["selection"] = self.colorScheme["details"]
-            self.colorScheme["text"] = self.colorScheme["background-color"]
+            self.colorScheme["text"] = self.colorScheme["secondary"]
 
         self.createImage()
 
@@ -388,7 +392,7 @@ class ImageObject():
         if self.debug:
             # vertical central
             self.drawLine((self.width/2, 0), (self.width/2,
-                                              self.height))  # vertical central
+                                              self.height))
             # vertical esquerda - padding
             self.drawLine((self.px, 0), (self.px, self.height))
             # vertical direita - padding
@@ -408,10 +412,10 @@ class ImageObject():
                           (self.width, self.height - self.py/2))
 
         self.putText()
-        if self.credits:
-            self.putCredits()
         if self.title:
             self.putTitle()
+        if self.credits:
+            self.putCredits()
         if show:
             self.image.show()
         # self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
