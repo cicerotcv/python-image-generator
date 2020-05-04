@@ -128,6 +128,8 @@ class ImageObject():
             self.textFontSize = fontSize
         self.textFont = ImageFont.truetype(
             font=fonts[self.textFontFamily], size=self.textFontSize)
+        if self.debug:
+            print(f"\tfonts[{self.textFontFamily}], size={self.textFontSize})")
 
     def setCreditsFont(self, fontFamily: str = "firacode-retina", fontSize: int = 40):
         "Determina a fonte dos créditos da imagem."
@@ -140,7 +142,7 @@ class ImageObject():
             font=fonts[fontFamily], size=fontSize)
 
     def setLines(self):
-        "transforma o texto em `self.text` em linhas a serem desenhadas na imagem;"
+        "Transforma o texto `self.text` em linhas a serem desenhadas na imagem;"
         if not self.lines:
             self.formatString()
         self.lines = [line.strip() for line in self.lines]
@@ -194,8 +196,7 @@ class ImageObject():
             font = self.textFont
         if not max_width:
             max_width = self.maxTextWidth
-        if not self.charWidth:
-            self.setCharBox()
+        self.setCharBox()
 
         return int(max_width/self.charWidth)
 
@@ -221,7 +222,8 @@ class ImageObject():
 
         max_cpl = self.getMaxCharactersPerLine(
             font=self.textFont, max_width=self.maxTextWidth)
-
+        if self.debug:
+            print(f"\tmax_cpl: {max_cpl}")
         lines = []
         new_string = string
 
@@ -272,9 +274,9 @@ class ImageObject():
             except:
                 print("drawLine color não foi identificada; verifique e tente novamente")
                 exit()
-        if self.debug:
-            print("[DEBUG] drawLine:")
-            print(f"\tcolor: {color}")
+        # if self.debug:
+        #     print("[DEBUG] drawLine:")
+        #     print(f"\tcolor: {color}")
         p0 = Ponto(p0[0], p0[1])
         p1 = Ponto(p1[0], p1[1])
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
@@ -282,9 +284,9 @@ class ImageObject():
 
     def drawRect(self, p0: Ponto, p1: Ponto):
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
-        if self.debug:
-            print("[DEBUG] drawRect:")
-            print(f"\t(x0,y0):{(p0.x,p0.y)}; (x1,y1):{(p1.x,p1.y)}")
+        # if self.debug:
+        #     print("[DEBUG] drawRect:")
+        #     print(f"\t(x0,y0):{(p0.x,p0.y)}; (x1,y1):{(p1.x,p1.y)}")
         self.draw.rectangle(xy=shape, fill=self.colorScheme["details"],
                             outline=None)
 
@@ -336,8 +338,6 @@ class ImageObject():
 
     def putText(self):
 
-        width, height = self.width, self.height
-
         nLines = len(self.lines)
         char_width, char_height = self.get_char_box(font=self.textFont)
 
@@ -355,6 +355,17 @@ class ImageObject():
             maxLineWidth = max(
                 [self.getLineShape(line, font=self.textFont)[0] for line in self.lines])
             totalTextHeight = maxLineHeight*nLines
+
+            if self.debug:
+                print("\n[DEBUG] putText: ajustando texto à imagem")
+                print(f"\tself.textFontSize: {self.textFontSize}")
+                print(f"\tlen(lines):{len(self.lines)}")
+                print(f"\ttotalTextHeight: {totalTextHeight}")
+                print(f"\tmaxTextHeight: {self.maxTextHeight}")
+                print(f"\tmaxLineWidth: {maxLineWidth}")
+                print(f"\t(totalTextHeight < self.maxTextHeight): {(totalTextHeight < self.maxTextHeight)}")
+                print(f"\t(maxLineWidth < self.maxTextWidth): {(maxLineWidth < self.maxTextWidth)}")
+            
             nLines = len(self.lines)
 
         x = int(self.width/2 - maxLineWidth/2)

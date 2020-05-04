@@ -33,10 +33,12 @@ def main():
 Programa que gera imagens com base em textos. O texto obedece a um template que é definido na hora da criação;
 O texto é centralizado e o programa adapta o tamanho da fonte caso exista tendência de extrapolar os limites;
 Para conhecer os limites, pode-se ativar o 'modo debug', que já possui funções que ajudam na hora de encontrar erros.
-    """
+A fonte se adapta mesmo que exista uma linha com um link bem grande:
+https://github.com/cicerotcv/Image-Generator
+    """*2
     # define as caracteristicas do texto principal da imagem
     new_image.setText(string1)
-    new_image.setTextFont("ubuntu-regular", 45)
+    new_image.setTextFont("firacode-retina", 45)
 
     # define as caracteristicas do titulo
     new_image.setTitleFont("ubuntu-regular", 40)
