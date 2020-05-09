@@ -18,6 +18,16 @@ class Ponto:
         self.x = int(x)
         self.y = int(y)
 
+class Texto:
+    def __init__(self, text:[str,list], font:ImageFont.FreeTypeFont):
+        "`text`: lista de parágrafos ou uma string com um único parágrafo;"
+        if text is str:
+            text = text.splitlines()
+        self.textWidth, self.textHeight = font.getsize(text)
+
+    def getLines(self, maxLineWidth:int):
+        "`maxLineWidth`: pixels"
+        pass
 
 class ImageObject():
     """Classe responsável por criar e lidar com imagens\n
@@ -58,7 +68,7 @@ class ImageObject():
         #         "text": "#672008",
         #         "selection":"#672008"
         #     }
-        self.selection = None
+        self.paddingLineColor = None
         # size
         self.width = width
         self.height = height
@@ -167,8 +177,16 @@ class ImageObject():
     def setDrawer(self):
         self.draw = ImageDraw.Draw(self.image)
 
+    def setPaddingBox(self, boolean: bool = True, color: str = "details"):
+        self.drawPaddingBox = boolean
+        self.paddingLineColor = self.getColor(thisColor=color)
+        if self.debug:
+            print(
+                f"[DEBUG] padding line will be drawn: {boolean};\n\tcolor: {self.paddingLineColor}")
+
     # Updates
     def updateSelf(self):
+        "Deve ser chamado após qualquer mudança 'manual' de dimensões;"
         self.px = int(self.paddingX*self.width)
         self.py = int(self.paddingY*self.height)
         self.maxTextWidth = self.width - 2*self.px
@@ -182,6 +200,28 @@ class ImageObject():
             print("[OK]\tImagem resetada")
 
     # métodos auxiliares
+    def getColor(self, thisColor:[str,tuple]) -> str:
+        """Pode ser:\n
+        `details`, `selection`, `text`, `red`, `gray`, `#2020F3`, `(255,32,0)`..."""
+        if thisColor:
+            try:
+                # podemos verificar se a cor inserida está no esquema de cores:
+                if thisColor in self.colorScheme:
+                    color = self.colorScheme[thisColor]
+                else:
+                    # ... se a cor não estiver no esquema de cores da imagem,
+                    # devemos buscar no banco de cores;
+                    color = getColor(thisColor)
+            except:
+                color = getColor("red")
+                print(
+                    "[ERROR] Falha ao encontrar cores. vermelho utilizado por default.")
+        else:
+            color = getColor("red")
+            print(
+                "[ERROR] Método getColor chamado sem informação de cor. Usando vermelho por default.")
+        return color
+            
 
     def get_char_box(self, font: ImageFont.FreeTypeFont) -> tuple:
         """
@@ -196,6 +236,7 @@ class ImageObject():
             font = self.textFont
         if not max_width:
             max_width = self.maxTextWidth
+
         self.setCharBox()
 
         return int(max_width/self.charWidth)
@@ -217,16 +258,25 @@ class ImageObject():
         centralizar na imagem
         """
         string = self.text
-        string = " ".join(string.splitlines())
-        string = string.replace("  ", " ")
+        string = " ".join(string.split())
+        # string = string.replace("  ", " ")
 
         max_cpl = self.getMaxCharactersPerLine(
             font=self.textFont, max_width=self.maxTextWidth)
         if self.debug:
             print(f"\tmax_cpl: {max_cpl}")
         lines = []
-        new_string = string
 
+        new_string = string
+        # aqui temos um pequeno dilema:
+        # deveriamos ser capazes de pegar uma string e calcular 
+        # o tamanho ideal de fonte, mas e se o usuário escolher 
+        # o tamanho da fonte? E se o tamanho da fonte que ele 
+        # escolher estourar os limites da página? Deveríamos 
+        # intervir? Deveríamos escolher o tamanho da fonte 
+        # automaticamnete para ele? O tamanho inteiro da string
+        # pode ser calculado com self.getLineShape(line=string, font=self.textFont)
+        width, height = self.getLineShape(string, font=self.textFont)
         while True:
             # verficar onde fica o espaço na string menor que
             last_space = self.findLastSpace(new_string, max_cpl)
@@ -238,11 +288,13 @@ class ImageObject():
             new_string = new_string[last_space:].lstrip()
 
         self.lines = lines
-
+        
     def getLineShape(self, line: str, font: ImageFont):
-        return font.getsize(line)
+        "Retorna `(width, height)` da string imputada em `line`;"
+        return font.getsize(line)  # (width, height)
 
     def assertOutput(self, outputPath: str):
+        "Método muito bagunçado. Arrumar depois e corrigir erros de compatibilidade com Linux"
         if outputPath:
             if "output" not in listdir():
                 system(r"mkdir output\%s" % outputPath)
@@ -265,37 +317,31 @@ class ImageObject():
             return r"output\SingleImages\\"
 
     # métodos de ação
-    def drawLine(self, p0: tuple, p1: tuple, color: str = "details"):
-        if color in self.colorScheme:
-            color = self.colorScheme[color]
-        else:
-            try:
-                color = getColor(colorName=color)
-            except:
-                print("drawLine color não foi identificada; verifique e tente novamente")
-                exit()
+    def drawLine(self, p0: tuple, p1: tuple, color="details"):
+        thisColor = self.getColor(color)
         # if self.debug:
         #     print("[DEBUG] drawLine:")
         #     print(f"\tcolor: {color}")
         p0 = Ponto(p0[0], p0[1])
         p1 = Ponto(p1[0], p1[1])
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
-        self.draw.line(shape, fill=color, width=2)
+        self.draw.line(shape, fill=thisColor, width=2)
 
-    def drawRect(self, p0: Ponto, p1: Ponto):
+    def drawRect(self, p0: Ponto, p1: Ponto, fillColor = "details"):
+        
+        fillColor = self.getColor(fillColor)
+
         shape = [(p0.x, p0.y), (p1.x, p1.y)]
-        # if self.debug:
-        #     print("[DEBUG] drawRect:")
-        #     print(f"\t(x0,y0):{(p0.x,p0.y)}; (x1,y1):{(p1.x,p1.y)}")
-        self.draw.rectangle(xy=shape, fill=self.colorScheme["details"],
+        if self.debug:
+            print(f"[DEBUG] drawRect: (x0,y0):{(p0.x,p0.y)}; (x1,y1):{(p1.x,p1.y)}; color: {fillColor}")
+        self.draw.rectangle(xy=shape, fill=self.getColor("details"),
                             outline=None)
 
     def drawPaddingLine(self):
         w = self.width
         h = self.height
         shape = [(self.px, self.py), (w-self.px, h-self.py)]
-        self.draw.rectangle(xy=shape, fill=None,
-                            outline=getColor('red'), width=2)
+        self.draw.rectangle(xy=shape, fill=None, outline=self.getColor("details"), width=2)
 
     def createImage(self):
         "Cria a imagem com altura, largura e cor de fundo"
@@ -308,8 +354,11 @@ class ImageObject():
                         self.height},\n\tbackground-color: {
                             self.colorScheme['background-color']}""")
 
-    def putCredits(self):
-
+    def putCredits(self, color = None):
+        if color:
+            color = self.getColor(color)
+        else:
+            color = self.getColor("details")
         w, h = self.creditsFont.getsize(text=self.credits)
 
         x = self.width/2 - w/2
@@ -318,7 +367,7 @@ class ImageObject():
         if self.drawSelection:
             width, height = self.getLineShape(
                 self.credits, font=self.creditsFont)
-            self.drawRect(Ponto(x, y), Ponto(x+width, y+height))
+            self.drawRect(Ponto(x, y), Ponto(x+width, y+height), fillColor=color)
         self.draw.text((x, y),
                        self.credits, font=self.creditsFont, fill=self.colorScheme["text"])
 
@@ -331,7 +380,7 @@ class ImageObject():
 
         if self.drawSelection:
             width, height = self.getLineShape(self.title, font=self.titleFont)
-            self.drawRect(Ponto(x, y), Ponto(x+width, y+height))
+            self.drawRect(Ponto(x, y), Ponto(x+width, y+height),fillColor="details")
 
         self.draw.text((x, y),
                        self.title, font=self.titleFont, fill=self.colorScheme["text"])
@@ -348,6 +397,8 @@ class ImageObject():
 
         totalTextHeight = maxLineHeight*nLines
         while not ((totalTextHeight < self.maxTextHeight) and (maxLineWidth < self.maxTextWidth)):
+            # modificar self.formatString para que consiga calcular o tamanho
+            # ideal de fonte para ajustar o texto;
             self.setTextFont(fontSize=self.textFontSize-1)
             self.formatString()
             maxLineHeight = max(
@@ -363,9 +414,11 @@ class ImageObject():
                 print(f"\ttotalTextHeight: {totalTextHeight}")
                 print(f"\tmaxTextHeight: {self.maxTextHeight}")
                 print(f"\tmaxLineWidth: {maxLineWidth}")
-                print(f"\t(totalTextHeight < self.maxTextHeight): {(totalTextHeight < self.maxTextHeight)}")
-                print(f"\t(maxLineWidth < self.maxTextWidth): {(maxLineWidth < self.maxTextWidth)}")
-            
+                print(
+                    f"\t(totalTextHeight < self.maxTextHeight): {(totalTextHeight < self.maxTextHeight)}")
+                print(
+                    f"\t(maxLineWidth < self.maxTextWidth): {(maxLineWidth < self.maxTextWidth)}")
+
             nLines = len(self.lines)
 
         x = int(self.width/2 - maxLineWidth/2)
@@ -376,7 +429,7 @@ class ImageObject():
                 width = self.getLineShape(line, font=self.textFont)[0]
                 height = maxLineHeight
                 self.drawRect(Ponto(x, y + maxLineHeight*index),
-                              Ponto(x+width, y+height + maxLineHeight*index))
+                              Ponto(x+width, y+height + maxLineHeight*index),fillColor="details")
 
             self.draw.text((x, y + maxLineHeight*index),
                            line, font=self.textFont, fill=self.colorScheme["text"])
@@ -428,8 +481,12 @@ class ImageObject():
         if self.credits:
             self.putCredits()
         if show:
-            self.image.show()
+            self.show()
         # self.updateAfterShow() # reseta as configurações da imagem para que possa ser reconfigurada e exibida novamente
 
     def save(self, path: str = None):
         self.image.save(self.assertOutput(path) + self.name + ".png")
+    
+    def show(self):
+        "Exibe a imagem. É necessário que `process` tenha sido chamado antes."
+        self.image.show()

@@ -17,7 +17,9 @@ fonts = {
     "firacode-regular": path.join(fontsPath, "FiraCode-Regular.ttf"),
     "firacode-bold": path.join(fontsPath, "FiraCode-Bold.ttf"),
     "firacode-retina": path.join(fontsPath, "FiraCode-Retina.ttf"),
-    "handwritten": path.join(fontsPath, "GloriaHallelujah-Regular.ttf"),
+    "handwritten1": path.join(fontsPath, "GloriaHallelujah-Regular.ttf"),
+    "handwritten2": path.join(fontsPath, "IndieFlower-Regular.ttf"),
+    "handwritten3": path.join(fontsPath, "MarckScript-Regular.ttf")
 }
 
 
